@@ -3,13 +3,18 @@
 #include <ncurses.h>
 #include <time.h>
 #include <pthread.h>
-#define win 3
 
-int x, y, hor, ver, loss=1,score,ver1,hor1;
+int x, y, hor, ver,loss=2,score,ver1,hor1;
+
+void gameover(){
+printf("\n\t\t!GAME OVER!\n\n");
+printf("\tYour score : %d\n\n",score);
+
+}
 
 void *loop1(void *arg) {
     while (1) {
-        ver1 = 0, hor1;
+        ver1 = 0;
         srand(time(0));
         hor1 = rand() % x;
         srand(rand());
@@ -18,7 +23,6 @@ void *loop1(void *arg) {
             ver1++;
             mvprintw(ver1, hor1, "*");
 
-            // Check if the plate caught the falling *
             if (ver1 == ver && hor1 >= hor && hor1 <= hor + 2) {
                 score++;
             }else if(ver1 == ver){
@@ -33,16 +37,13 @@ void *loop1(void *arg) {
         }
 
 
-	 if (score == win) {
-            mvprintw(y / 2, x / 2 - 4, "You win!");
-            break;
-	 }/*else if(loss == 0){
-	 	mvprintw(y / 2 , x / 2 - 5,"You loss!");
+	 if(loss == 0){
 		break;
-	 }*/
+	 }
 
 
     }
+    gameover();
     pthread_exit(NULL);
 }
 
@@ -64,17 +65,13 @@ void *loop2(void *arg) {
         refresh();
 
 
-	 if (score == 3) {
-    	    mvprintw(y / 2, x / 2 - 4, "You win!");
-            break;
-	 }/*else if(loss == 0){
-                mvprintw(y / 2 , x / 2 - 5,"You loss!");
+	 if(loss == 0){
                 break;
-         }*/
+         }
 
 
     }
-    
+gameover();    
 
     pthread_exit(NULL);
 
@@ -96,23 +93,27 @@ int main() {
     pthread_create(&thread1, NULL, loop1, NULL);
     pthread_create(&thread2, NULL, loop2, NULL);
 
-    while (1){
-     if (score == 3) {
+   /* while (1){
+     if (score == win ) {
             mvprintw(y / 2, x / 2 - 4, "You win!");
             break;
-     }/*else if(loss == 0){
+     }else if(loss == 0){
                 mvprintw(y / 2 , x / 2 - 5,"You loss!");
                 break;
-         }*/
-    }
+         }
+    }*/
+//    gameover();
 
     pthread_join(thread1, NULL);
     pthread_join(thread2, NULL);
 
 
-    mvprintw(y /2 ,x /2 ,"loss");
+  //  mvprintw(y /2 ,x /2 ,"loss");
 
     endwin();
+
+
+    gameover();
     return 0;
 }
 
